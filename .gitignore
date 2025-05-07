@@ -1,0 +1,33 @@
+# 빌드 출력물
+dist/
+node_modules/
+
+# IDE 설정
+.vscode/
+.cursor/
+.idea/
+*.sw?
+
+# 시스템 파일
+.DS_Store
+Thumbs.db
+
+# TypeScript 출력물 (만약 tsc만 사용할 경우)
+*.tsbuildinfo
+
+# 로그 및 환경파일
+*.log
+.env
+.env.*
+
+# 테스트 커버리지 (추후 Jest 사용 시)
+coverage/
+
+# 프로젝트 루트에서 생성될 수 있는 캐시 파일
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Express 서버 관련 빌드 캐시나 임시파일 (생길 수 있는 경우 대비)
+server/dist/
