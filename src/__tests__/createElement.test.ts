@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createElement } from "../jsx/createElement";
+import { createElement } from "@/jsx/createElement";
 
 describe("createElement", () => {
   // case 01 : ReactElement with string child
