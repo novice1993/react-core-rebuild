@@ -8,7 +8,7 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@jsx/*": ["src/jsx/*"]
+      "@/*": ["src/*"]
     }
   },
   "include": ["src"]
