@@ -1,11 +1,11 @@
 import { Child, VirtualNode } from "./type.jsx";
 import { normalizeChildren } from "./normalizeChildren";
 
-export const createElement = (
+export function createElement(
   type: string,
   props: Record<string, any> | null,
   ...children: Child[]
-): VirtualNode => {
+): VirtualNode {
   const { key = null, ...restProps } = props || {};
 
   return {
@@ -16,4 +16,4 @@ export const createElement = (
       children: normalizeChildren(children),
     },
   };
-};
+}

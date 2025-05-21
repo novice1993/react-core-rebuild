@@ -1,8 +1,8 @@
 import { VirtualNode } from "@/jsx/type.jsx";
 
-export const createDOMElement = (
+export function createDOMElement(
   virtualNode: VirtualNode | string
-): HTMLElement | Text => {
+): HTMLElement | Text {
   // 텍스트 노드 처리
   if (typeof virtualNode === "string") {
     return document.createTextNode(virtualNode);
@@ -30,4 +30,4 @@ export const createDOMElement = (
   }
 
   return element;
-};
+}
