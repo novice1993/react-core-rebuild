@@ -14,24 +14,29 @@ function findHostParent(fiber: FiberNode): HTMLElement | null {
     parent = parent.return;
   }
 
-  // 2. 부모 Fiber가 존재하지 않는 경우 null 반환
-  return null;
+  // 2. 부모 Fiber가 존재하지 않는 경우 body 태그 반환 (body를 root 요소로 설정)
+  return document.body;
 }
 
-export function commitWokr(fiber: FiberNode): void {
+export function commitWork(fiber: FiberNode): void {
   if (fiber.flags === "Placement" && fiber.stateNode) {
     // Parent Fiber가 존재하며, HTML 요소 기반일 경우 자식 요소로 삽입
     const parentDOM = findHostParent(fiber);
-    if (parentDOM) parentDOM.appendChild(fiber.stateNode);
+    if (parentDOM) {
+      parentDOM.appendChild(fiber.stateNode);
+      console.log(
+        `[commitWork] <${fiber.type}> → append to <${parentDOM.tagName}>`
+      );
+    }
   }
 
   // 자식 요소 commit 수행
   if (fiber.child) {
-    commitWokr(fiber.child);
+    commitWork(fiber.child);
   }
 
   // 형제 요소 commit 수행
   if (fiber.sibling) {
-    commitWokr(fiber.sibling);
+    commitWork(fiber.sibling);
   }
 }

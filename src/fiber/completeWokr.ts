@@ -8,5 +8,10 @@ export function completeWork(fiber: FiberNode): void {
   if (typeof fiber.type === "string" && fiber.stateNode === null) {
     const dom = document.createElement(fiber.type);
     fiber.stateNode = dom;
+    console.log(`[completeWork] ${fiber.type} → DOM 생성됨`);
   }
+
+  if (fiber.child) completeWork(fiber.child);
+
+  if (fiber.sibling) completeWork(fiber.sibling);
 }
