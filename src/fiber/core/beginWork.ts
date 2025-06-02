@@ -1,4 +1,4 @@
-import { FiberNode } from "./type.fiber";
+import { FiberNode } from "../type.fiber";
 
 export function beginWork(fiber: FiberNode): void {
   const prevFiber = fiber.alternate;

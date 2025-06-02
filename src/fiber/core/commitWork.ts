@@ -1,5 +1,5 @@
-import { FiberNode } from "./type.fiber";
-import { getHostParent, patchProps } from "./utils.fiber";
+import { FiberNode } from "../type.fiber";
+import { getHostParent, patchProps } from "../utils.fiber";
 
 export function commitWork(fiber: FiberNode): void {
   // 1. Placement 대상일 경우 부모 요소에 apeendChild 처리

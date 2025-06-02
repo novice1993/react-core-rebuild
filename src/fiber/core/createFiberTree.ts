@@ -1,6 +1,6 @@
 import { createFiberNode } from "./createFiberNode";
 import { VirtualNode } from "@/jsx/type.jsx";
-import { FiberNode } from "./type.fiber";
+import { FiberNode } from "../type.fiber";
 
 export function createFiberTree(
   virtualNode: VirtualNode,
