@@ -1,3 +1,4 @@
+import { createTextFiber } from "./createTextFiber";
 import { createFiberNode } from "./createFiberNode";
 import { VirtualNode } from "@/jsx/type.jsx";
 import { FiberNode } from "../type.fiber";
@@ -19,11 +20,17 @@ export function createFiberTree(
 
   // Fiber의 children 을 담은 배열 순회
   children.forEach((childNode, index) => {
-    // 만약 ReactElement가 아닌 string 데이터일 경우, 트리에 삽입하지 않음
-    if (typeof childNode === "string") return;
+    let childFiber: FiberNode;
+
+    // Text 노드일 경우 별도 처리
+    if (typeof childNode === "string") {
+      childFiber = createTextFiber(childNode, fiber);
+    }
 
     // ReactElement일 경우 재귀를 통하여 하부 트리 구성
-    const childFiber = createFiberTree(childNode, fiber);
+    else {
+      childFiber = createFiberTree(childNode, fiber);
+    }
 
     // 첫번째 자식 요소일 경우 child 요소의 value로 지정
     if (index === 0) {
