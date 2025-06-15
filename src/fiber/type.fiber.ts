@@ -1,3 +1,5 @@
+import { Effect } from "./hooks/types";
+
 export interface FiberNode {
   type: string | Function;
   key: null | string | number;
@@ -8,11 +10,13 @@ export interface FiberNode {
   return: FiberNode | null;
   alternate: FiberNode | null;
 
-  flags: "Placement" | "Update" | "Deletion" | null;
+  flags: "Placement" | "Update" | "Deletion" | number | null;
 
   memoizedProps: any;
   pendingProps: any;
 
   memoizedState: any;
   updateQueue: any;
+
+  effects?: Effect[];
 }
