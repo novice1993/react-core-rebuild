@@ -10,7 +10,7 @@ export interface FiberNode {
   return: FiberNode | null;
   alternate: FiberNode | null;
 
-  flags: "Placement" | "Update" | "Deletion" | number | null;
+  flags: number;
 
   memoizedProps: any;
   pendingProps: any;

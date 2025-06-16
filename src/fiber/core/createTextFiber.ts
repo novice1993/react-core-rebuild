@@ -1,4 +1,5 @@
 import { FiberNode } from "../type.fiber";
+import { FiberFlags } from "../constants";
 
 const TEXT_ELEMENT = "TEXT_ELEMENT";
 
@@ -13,7 +14,7 @@ export function createTextFiber(text: string, parent: FiberNode): FiberNode {
     return: parent,
     alternate: null,
 
-    flags: "Placement",
+    flags: FiberFlags.Placement,
 
     pendingProps: { nodeValue: text },
     memoizedProps: null,
