@@ -2,7 +2,7 @@ import { FiberNode } from "../type.fiber";
 import { setFiberFlag } from "../utils.fiber";
 import { FiberFlags } from "../constants";
 
-export function beginWork(fiber: FiberNode): void {
+export function beginWork(fiber: FiberNode): FiberNode | null {
   const prevFiber = fiber.alternate;
 
   const isHostComponent = typeof fiber.type === "string";
@@ -18,6 +18,5 @@ export function beginWork(fiber: FiberNode): void {
     console.log(`[beginWork] ${fiber.type} → flags = Update`);
   }
 
-  if (fiber.child) beginWork(fiber.child);
-  if (fiber.sibling) beginWork(fiber.sibling);
+  return fiber.child;
 }

@@ -1,6 +1,6 @@
 import { FiberNode } from "../type.fiber";
-import { beginWork } from "../core/beginWork";
+import { workLoop } from "../core/workLoop";
 
 export function scheduleUpdateOnFiber(fiber: FiberNode) {
-  beginWork(fiber);
+  workLoop(fiber);
 }
