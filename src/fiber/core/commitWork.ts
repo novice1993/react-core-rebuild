@@ -38,9 +38,4 @@ export function commitWork(fiber: FiberNode): void {
       });
     }
   }
-
-  // 자식 요소 commit 수행
-  if (fiber.child) commitWork(fiber.child);
-  // 형제 요소 commit 수행
-  if (fiber.sibling) commitWork(fiber.sibling);
 }
