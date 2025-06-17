@@ -6,7 +6,7 @@ import { describe, test, expect, beforeEach } from "vitest";
 import { createElement } from "@/jsx/createElement";
 import { createFiberTree } from "@/fiber/core/createFiberTree";
 import { beginWork } from "@/fiber/core/beginWork";
-import { completeWork } from "@/fiber/core/completeWokr";
+import { completeWork } from "@/fiber/core/completeWork";
 import { commitWork } from "@/fiber/core/commitWork";
 
 describe("Fiber 렌더링 사이클 (Vanilla ReactCore) - DOM commit 테스트", () => {

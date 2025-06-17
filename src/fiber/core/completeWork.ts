@@ -23,7 +23,4 @@ export function completeWork(fiber: FiberNode): void {
     // props 설정
     fiber.memoizedProps = fiber.pendingProps;
   }
-
-  if (fiber.child) completeWork(fiber.child);
-  if (fiber.sibling) completeWork(fiber.sibling);
 }
