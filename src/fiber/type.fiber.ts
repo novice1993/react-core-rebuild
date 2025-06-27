@@ -20,3 +20,9 @@ export interface FiberNode {
 
   effects?: Effect[];
 }
+
+export interface FiberRoot {
+  containerInfo: HTMLElement;
+  current: FiberNode;
+  finishedWork: FiberNode | null;
+}
