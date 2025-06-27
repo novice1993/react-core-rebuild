@@ -1,17 +1,22 @@
 import { FiberNode } from "./type.fiber";
 
 /** return 포인터 체이닝을 추적하면서 Host 컴포넌트를 탐색하여 반환하는 함수 */
-export function getHostParent(fiber: FiberNode): HTMLElement | null {
+export function getHostParent(fiber: FiberNode): HTMLElement | Text | null {
   let parent = fiber.return;
 
   // 1. 부모 Fiber가 존재하는 경우
   while (parent) {
-    // 1-1. HTML Element를 기반으로 한 HostComponent일 경우 포인터 반환
+    // 1-1. HostRoot 처리
+    if (parent.type === "HostRoot" && parent.stateNode) {
+      return (parent.stateNode as any).containerInfo;
+    }
+
+    // 1-2. HTML Element를 기반으로 한 HostComponent일 경우 포인터 반환
     if (typeof parent.type === "string" && parent.stateNode) {
       return parent.stateNode;
     }
 
-    // 1-2. 아닐 경우 트리 상부로 올라가며 부모 Fiber를 계속 탐색
+    // 1-3. 아닐 경우 트리 상부로 올라가며 부모 Fiber를 계속 탐색
     parent = parent.return;
   }
 
