@@ -30,6 +30,8 @@ export function patchProps(
   prevProps: any = {},
   nextProps: any = {}
 ): void {
+  if (!dom || !dom.setAttribute) return;
+
   // currnet - wip 비교하여 삭제된 props 제거
   for (const key in prevProps) {
     if (!(key in nextProps)) {
@@ -39,6 +41,7 @@ export function patchProps(
 
   // current - wip 비교하여 새로 추가되거나, 변경된 props 갱신
   for (const key in nextProps) {
+    if (key === "children") continue; // children은 별도 처리
     if (prevProps[key] !== nextProps[key]) {
       dom.setAttribute(key, nextProps[key]);
     }

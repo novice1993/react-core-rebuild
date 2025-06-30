@@ -11,7 +11,9 @@ export function commitWork(fiber: FiberNode): void {
     if (parentDOM) {
       parentDOM.appendChild(fiber.stateNode);
       console.log(
-        `[commitWork] <${fiber.type}> → append to <${parentDOM.tagName}>`
+        `[commitWork] <${fiber.type}> → append to <${
+          (parentDOM as HTMLElement).tagName || "PARENT"
+        }>`
       );
     }
   }
@@ -20,7 +22,7 @@ export function commitWork(fiber: FiberNode): void {
   else if (hasFiberFlag(fiber.flags, FiberFlags.Update) && fiber.stateNode) {
     // 텍스트 노드 업데이트
     if (fiber.type === "TEXT_ELEMENT") {
-      fiber.stateNode.textContent = fiber.pendingProps.nodeValue;
+      fiber.stateNode.nodeValue = fiber.pendingProps.nodeValue;
       console.log(
         `[commitWork] TEXT_ELEMENT → 내용 변경: "${fiber.pendingProps.nodeValue}"`
       );
@@ -28,10 +30,14 @@ export function commitWork(fiber: FiberNode): void {
     console.log(`[commitWork] <${fiber.type}> → 기존 DOM 재사용`);
   }
 
-  // 2. Update 대상일 경우 props 갱신
-  if (hasFiberFlag(fiber.flags, FiberFlags.Update) && fiber.stateNode) {
+  // 2. Update 대상일 경우 props 갱신 (HTMLElement만)
+  if (
+    hasFiberFlag(fiber.flags, FiberFlags.Update) &&
+    fiber.stateNode &&
+    fiber.type !== "TEXT_ELEMENT"
+  ) {
     patchProps(
-      fiber.stateNode,
+      fiber.stateNode as HTMLElement,
       fiber.alternate?.memoizedProps,
       fiber.memoizedProps
     );

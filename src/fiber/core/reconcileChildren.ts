@@ -11,13 +11,21 @@ export function reconcileChildren(
   // mount 상황: false, update 상황: true
   const shouldTrackSideEffects = current !== null;
 
+  console.log(
+    `[reconcileChildren] current=${
+      current ? "EXISTS" : "NULL"
+    }, shouldTrackSideEffects=${shouldTrackSideEffects}`
+  );
+
   // 1. update 상황
   if (shouldTrackSideEffects) {
+    console.log(`[reconcileChildren] → reconcileChildrenArray 호출`);
     reconcileChildrenArray(current, workInProgress, children);
   }
 
   // 2. mount 상황
   else {
+    console.log(`[reconcileChildren] → mountChildrenArray 호출`);
     mountChildrenArray(workInProgress, children);
   }
 }
@@ -62,6 +70,13 @@ function reconcileChildrenArray(
   let oldFiber = current.child; // 기존 Fiber Tree 순회용
   let newIndex = 0; // 새 children 배열 순회용
   let previousNewFiber: FiberNode | null = null; // sibling 연결용
+
+  // 첫 번째 render인 경우 mount로 처리
+  if (oldFiber === null) {
+    console.log(`[reconcileChildrenArray] 첫 render → mount 처리`);
+    mountChildrenArray(workInProgress, children);
+    return;
+  }
 
   // 기존 fiber와 새 children을 하나씩 비교
   while (oldFiber !== null && newIndex < children.length) {

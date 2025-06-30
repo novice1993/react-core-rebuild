@@ -11,7 +11,7 @@ export function updateContainer(
   const workInProgress: FiberNode = {
     ...current,
     pendingProps: { children: [element] },
-    alternate: current.alternate,
+    alternate: current,
     child: null,
     sibling: null,
     return: null,
