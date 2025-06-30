@@ -1,6 +1,7 @@
 import { VirtualNode } from "./jsx/type.jsx";
 import { createFiberRoot } from "./fiber/core/createFiberRoot.js";
 import { updateContainer } from "./fiber/core/updateContainer.js";
+import { setGlobalFiberRoot } from "./fiber/core/fiberRootContext.js";
 
 export function render(element: VirtualNode, container: HTMLElement): void {
   // 1. 기존 FiberRoot 탐색
@@ -10,6 +11,9 @@ export function render(element: VirtualNode, container: HTMLElement): void {
   if (!fiberRoot) {
     fiberRoot = createFiberRoot(container);
     (container as any)._renderRootContainer = fiberRoot;
+
+    // 전역 Fiber Root 설정
+    setGlobalFiberRoot(fiberRoot);
   }
 
   updateContainer(element, fiberRoot);

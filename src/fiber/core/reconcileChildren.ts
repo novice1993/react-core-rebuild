@@ -1,6 +1,7 @@
 import { createTextFiber } from "./createTextFiber";
 import { createFiberNode } from "./createFiberNode";
 import { FiberNode } from "../type.fiber";
+import { FiberFlags } from "../constants";
 
 export function reconcileChildren(
   current: FiberNode | null,
@@ -85,6 +86,7 @@ function reconcileChildrenArray(
         alternate: oldFiber,
         return: workInProgress,
         sibling: null,
+        flags: FiberFlags.Update,
       };
     }
 
