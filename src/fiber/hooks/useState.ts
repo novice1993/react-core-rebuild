@@ -20,8 +20,11 @@ export function useState<T>(
 
   // 상태 갱신 함수
   const dispatch = (action: T | ((prev: T) => T)) => {
+    console.log(`🔥 [useState] dispatch 호출됨:`, action);
     enqueueUpdate(hook.queue, action);
+    console.log(`📤 [useState] scheduleUpdateOnFiber 호출 시작`);
     scheduleUpdateOnFiber(hookContext.currentlyRenderingFiber!);
+    console.log(`✅ [useState] scheduleUpdateOnFiber 호출 완료`);
   };
 
   return [hook.memoizedState, dispatch];

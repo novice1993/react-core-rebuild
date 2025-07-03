@@ -30,11 +30,7 @@ export function commitWork(fiber: FiberNode): void {
   }
 
   // 2. Update 대상일 경우 props 갱신 (HTMLElement만)
-  if (
-    hasFiberFlag(fiber.flags, FiberFlags.Update) &&
-    fiber.stateNode &&
-    fiber.type !== "TEXT_ELEMENT"
-  ) {
+  if (fiber.stateNode && fiber.type !== "TEXT_ELEMENT") {
     patchProps(
       fiber.stateNode as HTMLElement,
       fiber.alternate?.memoizedProps,
