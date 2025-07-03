@@ -1,9 +1,15 @@
 import { Effect } from "./hooks/types";
 
+export interface FiberRoot {
+  containerInfo: HTMLElement;
+  current: FiberNode;
+  finishedWork: FiberNode | null;
+}
+
 export interface FiberNode {
   type: string | Function;
   key: null | string | number;
-  stateNode: HTMLElement | Text | null;
+  stateNode: HTMLElement | Text | FiberRoot | null;
 
   child: FiberNode | null;
   sibling: FiberNode | null;
@@ -19,10 +25,4 @@ export interface FiberNode {
   updateQueue: any;
 
   effects?: Effect[];
-}
-
-export interface FiberRoot {
-  containerInfo: HTMLElement;
-  current: FiberNode;
-  finishedWork: FiberNode | null;
 }

@@ -7,6 +7,7 @@ export function useState<T>(
   initialState: T
 ): [T, (action: T | ((prev: T) => T)) => void] {
   const hook = getNextHook();
+  const fiber = hookContext.currentlyRenderingFiber!;
 
   // 1. 최초 호출인 경우 -> 초기 값 할당
   if (hook.memoizedState === null) {
@@ -20,11 +21,8 @@ export function useState<T>(
 
   // 상태 갱신 함수
   const dispatch = (action: T | ((prev: T) => T)) => {
-    console.log(`🔥 [useState] dispatch 호출됨:`, action);
     enqueueUpdate(hook.queue, action);
-    console.log(`📤 [useState] scheduleUpdateOnFiber 호출 시작`);
-    scheduleUpdateOnFiber(hookContext.currentlyRenderingFiber!);
-    console.log(`✅ [useState] scheduleUpdateOnFiber 호출 완료`);
+    scheduleUpdateOnFiber(fiber);
   };
 
   return [hook.memoizedState, dispatch];
