@@ -1,4 +1,4 @@
-import { FiberNode } from "./type.fiber";
+import { FiberNode } from "../type.fiber";
 
 /** return 포인터 체이닝을 추적하면서 Host 컴포넌트를 탐색하여 반환하는 함수 */
 export function getHostParent(fiber: FiberNode): HTMLElement | Text | null {
@@ -22,30 +22,6 @@ export function getHostParent(fiber: FiberNode): HTMLElement | Text | null {
 
   // 2. 부모 Fiber가 존재하지 않는 경우 body 태그 반환 (body를 root 요소로 설정)
   return document.body;
-}
-
-/** current - workInProgress fiber를 비교하여 props를 추가, 갱신, 제거하는 함수 */
-export function patchProps(
-  dom: HTMLElement,
-  prevProps: any = {},
-  nextProps: any = {}
-): void {
-  if (!dom || !dom.setAttribute) return;
-
-  // currnet - wip 비교하여 삭제된 props 제거
-  for (const key in prevProps) {
-    if (!(key in nextProps)) {
-      dom.removeAttribute(key);
-    }
-  }
-
-  // current - wip 비교하여 새로 추가되거나, 변경된 props 갱신
-  for (const key in nextProps) {
-    if (key === "children") continue; // children은 별도 처리
-    if (prevProps[key] !== nextProps[key]) {
-      dom.setAttribute(key, nextProps[key]);
-    }
-  }
 }
 
 /** fiber에 flags를 세팅하는 함수 */

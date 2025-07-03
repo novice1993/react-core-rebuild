@@ -2,7 +2,7 @@ import { Child, VirtualNode } from "./type.jsx";
 import { normalizeChildren } from "./normalizeChildren";
 
 export function createElement(
-  type: string,
+  type: string | Function,
   props: Record<string, any> | null,
   ...children: Child[]
 ): VirtualNode {

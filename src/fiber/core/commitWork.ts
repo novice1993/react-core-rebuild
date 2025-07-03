@@ -1,7 +1,6 @@
 import { FiberNode } from "../type.fiber";
-import { getHostParent, patchProps } from "../utils.fiber";
+import { getHostParent, patchProps, hasFiberFlag } from "../utils";
 import { flushLayoutEffect, flushPassiveEffect } from "../hooks/flushEffects";
-import { hasFiberFlag } from "../utils.fiber";
 import { FiberFlags } from "../constants";
 
 export function commitWork(fiber: FiberNode): void {

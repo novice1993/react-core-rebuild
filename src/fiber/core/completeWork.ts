@@ -1,5 +1,5 @@
 import { FiberNode } from "../type.fiber";
-import { hasFiberFlag } from "../utils.fiber";
+import { hasFiberFlag } from "../utils";
 import { FiberFlags } from "../constants";
 
 export function completeWork(fiber: FiberNode): void {

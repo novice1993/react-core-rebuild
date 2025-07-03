@@ -11,3 +11,8 @@ export function prepareToUseHooks(fiber: FiberNode) {
   hookContext.currentlyRenderingFiber = fiber;
   hookContext.workInProgressHook = fiber.memoizedState;
 }
+
+export function finishUsingHooks() {
+  hookContext.currentlyRenderingFiber = null;
+  hookContext.workInProgressHook = null;
+}
