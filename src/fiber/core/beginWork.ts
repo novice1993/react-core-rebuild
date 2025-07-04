@@ -5,8 +5,6 @@ import { reconcileChildren } from "./reconcileChildren";
 import { prepareToUseHooks, finishUsingHooks } from "../hooks/context";
 
 export function beginWork(fiber: FiberNode): FiberNode | null {
-  
-
   if (fiber.type === "HostRoot") {
     return updateHostRoot(fiber);
   }
@@ -20,14 +18,12 @@ export function beginWork(fiber: FiberNode): FiberNode | null {
   const isHostComponent = typeof fiber.type === "string";
   const hasDOM = fiber.stateNode !== null;
   const propsChanged =
-    prevFiber && prevFiber.memoizedProps !== prevFiber.pendingProps;
+    prevFiber && prevFiber.memoizedProps !== fiber.pendingProps;
 
   if (isHostComponent && !hasDOM) {
     fiber.flags = setFiberFlag(fiber.flags, FiberFlags.Placement);
-    
   } else if (isHostComponent && propsChanged) {
     fiber.flags = setFiberFlag(fiber.flags, FiberFlags.Update);
-    
   }
 
   // Host 컴포넌트의 children도 reconcile 처리
@@ -41,7 +37,6 @@ export function beginWork(fiber: FiberNode): FiberNode | null {
 
 function updateHostRoot(fiber: FiberNode): FiberNode | null {
   const children = fiber.pendingProps?.children || [];
-  
 
   reconcileChildren(fiber.alternate, fiber, children);
   return fiber.child;

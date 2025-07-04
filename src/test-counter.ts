@@ -2,6 +2,7 @@
 import { createElement } from "./jsx/createElement";
 import { render } from "./ReactDOM";
 import { useState } from "./fiber/hooks/useState";
+import { useEffect, useLayoutEffect } from "./fiber/hooks/useEffect";
 
 // JSX 타입 선언 (createElement 함수 사용을 위해)
 declare global {
@@ -12,6 +13,7 @@ declare global {
       p: any;
       button: any;
       span: any;
+      input: any;
     }
   }
 }
@@ -20,125 +22,112 @@ declare global {
 (globalThis as any).React = { createElement };
 
 /**
- * Counter 컴포넌트 - useState Hook 테스트
+ * ComplexCounter 컴포넌트 - 복합적인 useState, useEffect, useLayoutEffect 테스트
  *
  * 테스트 시나리오:
- * 1. 초기값 0으로 시작
- * 2. +1, -1, +5, -5 버튼으로 상태 변경
- * 3. Reset 버튼으로 0으로 초기화
- * 4. 각 클릭마다 리렌더링 발생 여부 확인
+ * 1. count 상태: 버튼 클릭으로 증감
+ * 2. textInput 상태: input 필드에 텍스트 입력 시 변경
+ * 3. isVisible 상태: 토글 버튼으로 특정 div의 가시성 제어
+ * 4. useEffect: count 변경 시 DOM 업데이트 및 콘솔 로깅 (비동기)
+ * 5. useLayoutEffect: textInput 길이 변경 시 DOM 스타일 동기적 변경
  */
-function Counter() {
-  console.log("🔄 Counter 컴포넌트 렌더링 중...");
-
+function ComplexCounter() {
   const [count, setCount] = useState(0);
+  const [textInput, setTextInput] = useState("");
+  const [isVisible, setIsVisible] = useState(true);
 
-  console.log(`📊 현재 count 상태: ${count}`);
+  // useEffect: count 변경 시 비동기적으로 DOM 업데이트 및 로깅
+  useEffect(() => {
+    console.log(`✨ useEffect 발동: count가 ${count}으로 변경됨`);
+    const effectDisplay = document.getElementById("effect-display");
+    if (effectDisplay) {
+      effectDisplay.textContent = `Effect: Count is now ${count}`;
+    }
+    // 클린업 함수
+    return () => {
+      console.log(`🧹 useEffect 클린업: count ${count}에 대한 효과 정리`);
+    };
+  }, [count]);
+
+  // useLayoutEffect: textInput 길이 변경 시 동기적으로 DOM 스타일 변경
+  useLayoutEffect(() => {
+    console.log(`🎨 useLayoutEffect 발동: textInput이 ${textInput}으로 변경됨`);
+    const layoutDisplay = document.getElementById("layout-effect-display");
+    if (layoutDisplay) {
+      layoutDisplay.style.backgroundColor =
+        textInput.length > 5 ? "lightblue" : "white";
+    }
+    // 클린업 함수
+    return () => {
+      console.log(
+        `🧹 useLayoutEffect 클린업: textInput ${textInput}에 대한 효과 정리`
+      );
+    };
+  }, [textInput]);
 
   return createElement(
     "div",
-    { className: "counter" },
-    createElement("h2", {}, "🧮 useState Hook 카운터"),
+    { className: "complex-counter-container" },
+    createElement("h2", {}, "🧪 복합 useState & Effect 테스트"),
 
-    createElement("div", { className: "count-display" }, count.toString()),
-
-    createElement(
-      "p",
-      {},
-      "버튼을 클릭해서 useState가 정상 동작하는지 확인하세요!"
-    ),
-
-    // 증가/감소 버튼들
+    // Count 섹션
     createElement(
       "div",
-      {},
-      createElement(
-        "button",
-        {
-          onclick: () => {
-            console.log("➕ +1 버튼 클릭");
-            setCount(count + 1);
-          },
-        },
-        "+1"
-      ),
-
-      createElement(
-        "button",
-        {
-          onclick: () => {
-            console.log("➖ -1 버튼 클릭");
-            setCount(count - 1);
-          },
-        },
-        "-1"
-      ),
-
-      createElement(
-        "button",
-        {
-          onclick: () => {
-            console.log("⬆️ +5 버튼 클릭");
-            setCount(count + 5);
-          },
-        },
-        "+5"
-      ),
-
-      createElement(
-        "button",
-        {
-          onclick: () => {
-            console.log("⬇️ -5 버튼 클릭");
-            setCount(count - 5);
-          },
-        },
-        "-5"
-      )
+      { style: "margin-bottom: 1rem;" },
+      createElement("p", {}, `카운트: ${count}`),
+      createElement("button", { onclick: () => setCount(count + 1) }, "+1"),
+      createElement("button", { onclick: () => setCount(count - 1) }, "-1"),
+      createElement("button", { onclick: () => setCount(0) }, "Reset Count")
     ),
 
-    // 리셋 버튼
+    // Text Input 섹션
     createElement(
       "div",
-      {},
-      createElement(
-        "button",
-        {
-          className: "reset-btn",
-          onclick: () => {
-            console.log("🔄 Reset 버튼 클릭");
-            setCount(0);
-          },
-        },
-        "Reset"
-      )
+      { style: "margin-bottom: 1rem;" },
+      createElement("p", {}, `입력 텍스트: ${textInput}`),
+      createElement("input", {
+        type: "text",
+        value: textInput,
+        oninput: (e: Event) =>
+          setTextInput((e.target as HTMLInputElement).value),
+        placeholder: "여기에 입력하세요",
+        style: "width: 200px; padding: 5px;",
+      })
     ),
 
-    // 함수형 업데이트 테스트
+    // Visibility Toggle 섹션
     createElement(
       "div",
-      { style: "margin-top: 1rem;" },
-      createElement("p", {}, "함수형 업데이트 테스트:"),
+      { style: "margin-bottom: 1rem;" },
       createElement(
         "button",
-        {
-          onclick: () => {
-            console.log("🔢 함수형 업데이트: count => count * 2");
-            setCount((prevCount: number) => prevCount * 2);
-          },
-        },
-        "Double (×2)"
+        { onclick: () => setIsVisible(!isVisible) },
+        isVisible ? "숨기기" : "보이기"
       ),
-
-      createElement(
-        "button",
-        {
-          onclick: () => {
-            console.log("🔢 함수형 업데이트: count => Math.max(0, count)");
-            setCount((prevCount: number) => Math.max(0, prevCount));
+      isVisible &&
+        createElement(
+          "div",
+          {
+            style: "padding: 10px; border: 1px solid gray; margin-top: 10px;",
           },
-        },
-        "Max(0, count)"
+          "이 div는 보였다 숨겨졌다 합니다."
+        )
+    ),
+
+    // Effect 결과 표시 섹션
+    createElement(
+      "div",
+      { style: "margin-top: 2rem;" },
+      createElement("h3", {}, "Effect 결과:"),
+      createElement(
+        "p",
+        { id: "effect-display", style: "color: blue;" },
+        "Effect: 초기 상태"
+      ),
+      createElement(
+        "p",
+        { id: "layout-effect-display", style: "padding: 5px;" },
+        "Layout Effect: 초기 상태"
       )
     )
   );
@@ -159,22 +148,24 @@ function App() {
       createElement(
         "span",
         { style: "font-size: 0.9rem; color: #6b7280;" },
-        "개발자 도구 Console을 열어서 렌더링 로그를 확인하세요 📊"
+        "개발자 도구 Console을 열어서 렌더링 및 Effect 로그를 확인하세요 📊"
       )
     ),
 
-    createElement(Counter, {})
+    createElement(ComplexCounter, {})
   );
 }
 
 // 렌더링 시작
 console.log("🎬 React Core Rebuild 테스트 시작!");
-console.log("👀 useState Hook 동작을 확인합니다...");
+console.log(
+  "👀 복합적인 useState, useEffect, useLayoutEffect 동작을 확인합니다..."
+);
 
 const rootElement = document.getElementById("root");
 if (rootElement) {
   render(createElement(App, {}), rootElement);
-  console.log("✅ 초기 렌더링 완료! 이제 버튼을 클릭해보세요.");
+  console.log("✅ 초기 렌더링 완료! 이제 버튼과 입력 필드를 조작해보세요.");
 } else {
   console.error("❌ root 엘리먼트를 찾을 수 없습니다!");
 }

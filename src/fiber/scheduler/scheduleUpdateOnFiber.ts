@@ -26,7 +26,9 @@ function createWorkInProgress(current: FiberNode): FiberNode {
   // 2. workInProgress 트리가 있는 경우 (상태 업데이트)
   else {
     // 상태 업데이트 시에는 마지막으로 완료된 memoizedProps를 기반으로 작업을 시작
-    workInProgress.pendingProps = current.memoizedProps;
+    // current의 stateNode를 workInProgress로 복사하여 DOM 참조를 유지합니다.
+    workInProgress.stateNode = current.stateNode;
+    workInProgress.pendingProps = current.pendingProps;
     // 작업에 들어가기 전, effect flag와 자식/형제 포인터를 초기화
     workInProgress.flags = 0;
     workInProgress.child = null;

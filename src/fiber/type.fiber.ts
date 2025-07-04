@@ -24,5 +24,7 @@ export interface FiberNode {
   memoizedState: any;
   updateQueue: any;
 
+  effects?: FiberNode[];
+
   
 }

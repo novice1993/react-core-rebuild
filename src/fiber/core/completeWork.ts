@@ -31,4 +31,21 @@ export function completeWork(fiber: FiberNode): void {
 
   // props 설정
   fiber.memoizedProps = fiber.pendingProps;
+
+  // Effects 수집: 자식과 형제의 effects를 현재 fiber로 수집
+  collectChildEffects(fiber);
+}
+
+function collectChildEffects(parent: FiberNode): void {
+  let child = parent.child;
+
+  while (child !== null) {
+    // 자식의 effects를 부모로 수집
+    if (child.effects && child.effects.length > 0) {
+      parent.effects = parent.effects || [];
+      parent.effects.push(...child.effects);
+    }
+
+    child = child.sibling;
+  }
 }
