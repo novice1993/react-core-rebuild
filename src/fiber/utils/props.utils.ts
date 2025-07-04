@@ -25,11 +25,9 @@ export function patchProps(
         // 이전 이벤트 리스너 제거
         const eventType = getEventType(key);
         dom.removeEventListener(eventType, prevProps[key]);
-        console.log(`[patchProps] 이벤트 제거: ${eventType}`);
       } else {
         // 일반 HTML attribute 제거
         dom.removeAttribute(key);
-        console.log(`[patchProps] attribute 제거: ${key}`);
       }
     }
   }
@@ -51,13 +49,11 @@ export function patchProps(
 
         // 새 리스너 등록
         dom.addEventListener(eventType, nextProps[key]);
-        console.log(`[patchProps] 이벤트 등록: ${eventType}`);
       }
     } else {
       // 일반 HTML attribute 처리
       if (prevProps[key] !== nextProps[key]) {
         dom.setAttribute(key, nextProps[key]);
-        console.log(`[patchProps] attribute 설정: ${key}=${nextProps[key]}`);
       }
     }
   }

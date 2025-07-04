@@ -67,7 +67,6 @@ export function scheduleUpdateOnFiber(fiber: FiberNode) {
     commitUnitOfWork(finishedWork);
     fiberRoot.current = fiberRoot.finishedWork;
     fiberRoot.finishedWork = null;
-    console.log(`✅ [scheduleUpdateOnFiber] commit 단계 완료 및 버퍼 교체`);
   } else {
     console.log(`❌ [scheduleUpdateOnFiber] commit 단계 스킵`);
   }

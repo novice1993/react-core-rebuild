@@ -10,9 +10,7 @@ export function completeWork(fiber: FiberNode): void {
     if (isPlacement && fiber.stateNode === null) {
       const textNode = document.createTextNode(fiber.pendingProps.nodeValue);
       fiber.stateNode = textNode;
-      console.log(
-        `[completeWork] TEXT_ELEMENT → textNode 생성: "${fiber.pendingProps.nodeValue}"`
-      );
+      
     }
   }
 
@@ -22,12 +20,12 @@ export function completeWork(fiber: FiberNode): void {
     if (isPlacement && fiber.stateNode === null) {
       const dom = document.createElement(fiber.type);
       fiber.stateNode = dom;
-      console.log(`[completeWork] ${fiber.type} → DOM 생성됨`);
+      
     }
 
     // 2) 갱신되는 컴포넌트인 경우
     else if (isUpdate) {
-      console.log(`[completeWork] <${fiber.type}> → 변경 예정 (props 갱신)`);
+      
     }
   }
 

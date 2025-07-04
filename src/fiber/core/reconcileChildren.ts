@@ -11,21 +11,17 @@ export function reconcileChildren(
   // mount 상황: false, update 상황: true
   const shouldTrackSideEffects = current !== null;
 
-  console.log(
-    `[reconcileChildren] current=${
-      current ? "EXISTS" : "NULL"
-    }, shouldTrackSideEffects=${shouldTrackSideEffects}`
-  );
+  
 
   // 1. update 상황
   if (shouldTrackSideEffects) {
-    console.log(`[reconcileChildren] → reconcileChildrenArray 호출`);
+    
     reconcileChildrenArray(current, workInProgress, children);
   }
 
   // 2. mount 상황
   else {
-    console.log(`[reconcileChildren] → mountChildrenArray 호출`);
+    
     mountChildrenArray(workInProgress, children);
   }
 }
@@ -73,7 +69,7 @@ function reconcileChildrenArray(
 
   // 첫 번째 render인 경우 mount로 처리
   if (oldFiber === null) {
-    console.log(`[reconcileChildrenArray] 첫 render → mount 처리`);
+    
     mountChildrenArray(workInProgress, children);
     return;
   }

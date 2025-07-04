@@ -1,4 +1,4 @@
-import { FiberNode } from "../type.fiber";
+import { FiberNode, FiberRoot } from "../type.fiber"; // FiberRoot 타입 임포트 추가
 import { getHostParent, patchProps, hasFiberFlag } from "../utils";
 import { flushLayoutEffect, flushPassiveEffect } from "../hooks/flushEffects";
 import { FiberFlags } from "../constants";
@@ -7,13 +7,10 @@ export function commitWork(fiber: FiberNode): void {
   // 1-1. Placement 대상일 경우 부모 요소에 apeendChild 처리
   if (hasFiberFlag(fiber.flags, FiberFlags.Placement) && fiber.stateNode) {
     const parentDOM = getHostParent(fiber);
-    if (parentDOM) {
-      parentDOM.appendChild(fiber.stateNode);
-      console.log(
-        `[commitWork] <${fiber.type}> → append to <${
-          (parentDOM as HTMLElement).tagName || "PARENT"
-        }>`
-      );
+    // parentDOM이 HTMLElement인 경우에만 appendChild 호출
+    if (parentDOM instanceof HTMLElement) {
+      parentDOM.appendChild(fiber.stateNode as HTMLElement | Text); // fiber.stateNode가 DOM 노드임을 단언
+      
     }
   }
 
@@ -21,18 +18,17 @@ export function commitWork(fiber: FiberNode): void {
   else if (hasFiberFlag(fiber.flags, FiberFlags.Update) && fiber.stateNode) {
     // 텍스트 노드 업데이트
     if (fiber.type === "TEXT_ELEMENT") {
-      fiber.stateNode.nodeValue = fiber.pendingProps.nodeValue;
-      console.log(
-        `[commitWork] TEXT_ELEMENT → 내용 변경: "${fiber.pendingProps.nodeValue}"`
-      );
+      (fiber.stateNode as Text).nodeValue = fiber.pendingProps.nodeValue; // Text 타입으로 단언
+      
     }
-    console.log(`[commitWork] <${fiber.type}> → 기존 DOM 재사용`);
+    
   }
 
   // 2. Update 대상일 경우 props 갱신 (HTMLElement만)
-  if (fiber.stateNode && fiber.type !== "TEXT_ELEMENT") {
+  // fiber.stateNode가 HTMLElement 인스턴스인 경우에만 patchProps 호출
+  if (fiber.stateNode instanceof HTMLElement && fiber.type !== "TEXT_ELEMENT") {
     patchProps(
-      fiber.stateNode as HTMLElement,
+      fiber.stateNode,
       fiber.alternate?.memoizedProps,
       fiber.memoizedProps
     );
