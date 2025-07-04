@@ -6,6 +6,7 @@ function createInitHookState(): Hook {
     memoizedState: null,
     queue: { pending: null },
     next: null,
+    memoizedEffect: null,
   };
 }
 
@@ -18,6 +19,7 @@ export function getNextHook(): Hook {
       memoizedState: hookContext.currentHook.memoizedState,
       queue: hookContext.currentHook.queue,
       next: null, // next는 새로 연결해야 하므로 null로 초기화
+      memoizedEffect: hookContext.currentHook.memoizedEffect, // memoizedEffect 복사
     };
     // 읽기 포인터를 다음으로 이동
     hookContext.currentHook = hookContext.currentHook.next;
