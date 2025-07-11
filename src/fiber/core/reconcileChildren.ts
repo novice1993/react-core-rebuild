@@ -39,17 +39,19 @@ function mountChildrenArray(workInProgress: FiberNode, children: any[]): void {
 
     // 1. 텍스트 노드 생성
     if (typeof child === "string") {
-      childFiber = createTextFiber(child, workInProgress);
+      childFiber = createTextFiber(child);
     }
     // 2. React Element 생성
     else if (typeof child === "object" && child.type) {
       childFiber = createFiberNode(child);
-      childFiber.return = workInProgress;
     }
     // 3. null, undefined, boolean 등은 렌더링에서 제외
     else {
       return;
     }
+
+    // 부모 노드 연결
+    childFiber.return = workInProgress;
 
     // 자식 체인 연결: 첫 번째는 child, 나머지는 sibling
     if (index === 0) {
@@ -81,76 +83,150 @@ function reconcileChildrenArray(
   newChildren: any[]
 ): void {
   // Step 1: 기존 fiber들을 Map에 저장 (재사용 대상 pool 생성)
+  const oldChildrenMap = buildOldFiberMap(current);
+
+  // Step 2: 새 children 처리 및 fiber 재사용/생성 결정
+  const { connectedFibers, updatedMap } = processNewChildren(
+    newChildren,
+    oldChildrenMap,
+    workInProgress
+  );
+
+  // Step 2c: 새 fiber 체인을 workInProgress에 연결
+  connectNewFibers(connectedFibers, workInProgress);
+
+  // Step 3: 재사용되지 않은 기존 fiber들을 삭제 대상으로 표시
+  markRemainingFibersForDeletion(updatedMap, workInProgress);
+}
+
+/**
+ * Step 1: 기존 fiber들을 Map에 저장하는 헬퍼 함수
+ */
+function buildOldFiberMap(current: FiberNode): Map<string | number, FiberNode> {
   const oldChildrenMap = new Map<string | number, FiberNode>();
   let oldFiber = current.child;
   let oldIndex = 0;
 
   while (oldFiber !== null) {
-    // 임시 키 생성: 명시적 key가 있으면 사용, 없으면 type-index 조합
     const mapKey =
       oldFiber.key !== null
         ? oldFiber.key
         : `${oldFiber.type || "unknown"}-${oldIndex}`;
+
     oldChildrenMap.set(mapKey, oldFiber);
     oldFiber = oldFiber.sibling;
     oldIndex++;
   }
 
-  // Step 2: 새 children 처리 및 fiber 재사용/생성 결정
-  let previousNewFiber: FiberNode | null = null;
+  return oldChildrenMap;
+}
+
+/**
+ * Step 2: 새 children 처리 및 fiber 재사용/생성 결정하는 헬퍼 함수
+ */
+function processNewChildren(
+  newChildren: any[],
+  oldChildrenMap: Map<string | number, FiberNode>,
+  workInProgress: FiberNode
+): {
+  connectedFibers: FiberNode[];
+  updatedMap: Map<string | number, FiberNode>;
+} {
+  const connectedFibers: FiberNode[] = [];
 
   newChildren.forEach((child, index) => {
-    let newFiber: FiberNode | null = null;
-
-    // 새 child의 키 생성 (기존 fiber와 매칭하기 위함)
-    const key =
-      getElementKey(child) ||
-      (typeof child === "string"
-        ? `TEXT_ELEMENT-${index}`
-        : `${getElementType(child)}-${index}`);
-
-    const oldFiberFromMap = oldChildrenMap.get(key);
-
-    // Step 2a: 재사용 가능한 경우 (key와 type이 모두 일치)
-    if (oldFiberFromMap && oldFiberFromMap.type === getElementType(child)) {
-      newFiber = {
-        ...oldFiberFromMap,
-        stateNode: oldFiberFromMap.stateNode, // DOM 노드 재사용
-        pendingProps: getElementProps(child),
-        alternate: oldFiberFromMap, // 이중 버퍼링을 위한 참조
-        return: workInProgress,
-        sibling: null, // 새로운 sibling 체인에서 재설정
-        flags: FiberFlags.Update, // 업데이트 플래그 설정
-      };
-      oldChildrenMap.delete(key); // 재사용된 fiber는 삭제 대상에서 제외
-    }
-    // Step 2b: 새로 생성해야 하는 경우
-    else {
-      if (typeof child === "string") {
-        newFiber = createTextFiber(child, workInProgress);
-      } else if (typeof child === "object" && child.type) {
-        newFiber = createFiberNode(child);
-        newFiber.return = workInProgress;
-      }
-
-      if (newFiber) {
-        newFiber.flags = FiberFlags.Placement; // 새 DOM 생성 플래그
-      }
-    }
-
-    // Step 2c: 새 fiber 체인 연결
+    const newFiber = createOrReuseFiber(
+      child,
+      index,
+      oldChildrenMap,
+      workInProgress
+    );
     if (newFiber) {
-      if (index === 0) {
-        workInProgress.child = newFiber;
-      } else if (previousNewFiber) {
-        previousNewFiber.sibling = newFiber;
-      }
-      previousNewFiber = newFiber;
+      connectedFibers.push(newFiber);
     }
   });
 
-  // Step 3: 재사용되지 않은 기존 fiber들을 삭제 대상으로 표시
-  oldChildrenMap.forEach((fiberToDelete) => {
+  return { connectedFibers, updatedMap: oldChildrenMap };
+}
+
+/**
+ * 개별 child에 대해 fiber를 생성하거나 재사용하는 헬퍼 함수
+ */
+function createOrReuseFiber(
+  child: any,
+  index: number,
+  oldChildrenMap: Map<string | number, FiberNode>,
+  workInProgress: FiberNode
+): FiberNode | null {
+  let newFiber: FiberNode | null = null;
+
+  // 새 child의 키 생성 (기존 fiber와 매칭하기 위함)
+  const key =
+    getElementKey(child) ||
+    (typeof child === "string"
+      ? `TEXT_ELEMENT-${index}`
+      : `${getElementType(child)}-${index}`);
+
+  const oldFiberFromMap = oldChildrenMap.get(key);
+
+  // Step 2a: 재사용 가능한 경우 (key와 type이 모두 일치)
+  if (oldFiberFromMap && oldFiberFromMap.type === getElementType(child)) {
+    newFiber = {
+      ...oldFiberFromMap,
+      stateNode: oldFiberFromMap.stateNode, // DOM 노드 재사용
+      pendingProps: getElementProps(child),
+      alternate: oldFiberFromMap, // 이중 버퍼링을 위한 참조
+      return: workInProgress,
+      sibling: null, // 새로운 sibling 체인에서 재설정
+      flags: FiberFlags.Update, // 업데이트 플래그 설정
+    };
+    oldChildrenMap.delete(key); // 재사용된 fiber는 삭제 대상에서 제외
+  }
+  // Step 2b: 새로 생성해야 하는 경우
+  else {
+    if (typeof child === "string") {
+      newFiber = createTextFiber(child);
+      newFiber.return = workInProgress;
+    } else if (typeof child === "object" && child.type) {
+      newFiber = createFiberNode(child);
+      newFiber.return = workInProgress;
+    }
+
+    if (newFiber) {
+      newFiber.flags = FiberFlags.Placement; // 새 DOM 생성 플래그
+    }
+  }
+
+  return newFiber;
+}
+
+/**
+ * Step 2c: 새로 생성된 fiber들을 sibling 체인으로 연결하는 헬퍼 함수
+ */
+function connectNewFibers(
+  fibers: FiberNode[],
+  workInProgress: FiberNode
+): void {
+  let previousNewFiber: FiberNode | null = null;
+
+  fibers.forEach((fiber, index) => {
+    if (index === 0) {
+      workInProgress.child = fiber;
+    } else if (previousNewFiber) {
+      previousNewFiber.sibling = fiber;
+    }
+    previousNewFiber = fiber;
+  });
+}
+
+/**
+ * Step 3: 재사용되지 않은 기존 fiber들을 삭제 대상으로 표시하는 헬퍼 함수
+ */
+function markRemainingFibersForDeletion(
+  remainingOldFibers: Map<string | number, FiberNode>,
+  workInProgress: FiberNode
+): void {
+  remainingOldFibers.forEach((fiberToDelete) => {
     fiberToDelete.flags = FiberFlags.Deletion;
     workInProgress.effects = workInProgress.effects || [];
     workInProgress.effects.push(fiberToDelete);
