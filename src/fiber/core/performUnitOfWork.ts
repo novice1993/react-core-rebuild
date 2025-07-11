@@ -2,9 +2,9 @@ import { FiberNode } from "../type.fiber";
 import { beginWork } from "./beginWork";
 import { completeUnitOfWork } from "./completeUnitOfWork";
 
-export function performUnitOfWork(fiber: FiberNode): FiberNode | null {
+export function performUnitOfWork(workInProgress: FiberNode): FiberNode | null {
   // 1. beginWork 수행
-  const next = beginWork(fiber);
+  const next = beginWork(workInProgress);
 
   // 2. 자식 노드가 있으면 자식 참조
   if (next !== null) {
@@ -12,5 +12,5 @@ export function performUnitOfWork(fiber: FiberNode): FiberNode | null {
   }
 
   // 3. 자식 노드가 없을 경우 completeUnitOfWork 호출
-  return completeUnitOfWork(fiber);
+  return completeUnitOfWork(workInProgress);
 }

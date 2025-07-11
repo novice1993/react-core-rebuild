@@ -1,36 +1,9 @@
-// React Core Rebuild - useState Hook 테스트
 import { createElement } from "./jsx/createElement";
 import { render } from "./ReactDOM";
 import { useState } from "./fiber/hooks/useState";
 import { useEffect, useLayoutEffect } from "./fiber/hooks/useEffect";
 
-// JSX 타입 선언 (createElement 함수 사용을 위해)
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      div: any;
-      h2: any;
-      p: any;
-      button: any;
-      span: any;
-      input: any;
-    }
-  }
-}
-
-// React 전역 설정 (JSX 변환을 위해)
-(globalThis as any).React = { createElement };
-
-/**
- * ComplexCounter 컴포넌트 - 복합적인 useState, useEffect, useLayoutEffect 테스트
- *
- * 테스트 시나리오:
- * 1. count 상태: 버튼 클릭으로 증감
- * 2. textInput 상태: input 필드에 텍스트 입력 시 변경
- * 3. isVisible 상태: 토글 버튼으로 특정 div의 가시성 제어
- * 4. useEffect: count 변경 시 DOM 업데이트 및 콘솔 로깅 (비동기)
- * 5. useLayoutEffect: textInput 길이 변경 시 DOM 스타일 동기적 변경
- */
+// 컴포넌트 생성 -> 훅 호출 + createElement로 생성한 ReactElement 반환
 function ComplexCounter() {
   const [count, setCount] = useState(0);
   const [textInput, setTextInput] = useState("");
@@ -133,9 +106,7 @@ function ComplexCounter() {
   );
 }
 
-/**
- * 앱 컴포넌트 - 전체 테스트 래퍼
- */
+// 래퍼 컴포넌트 생성
 function App() {
   console.log("🚀 App 컴포넌트 렌더링 중...");
 
@@ -162,7 +133,10 @@ console.log(
   "👀 복합적인 useState, useEffect, useLayoutEffect 동작을 확인합니다..."
 );
 
+// Root HTML 생성
 const rootElement = document.getElementById("root");
+
+// render의 인자로 Root 컴포넌트와 Root HTML 전달
 if (rootElement) {
   render(createElement(App, {}), rootElement);
   console.log("✅ 초기 렌더링 완료! 이제 버튼과 입력 필드를 조작해보세요.");
