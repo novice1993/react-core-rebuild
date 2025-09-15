@@ -1,4 +1,4 @@
-import { FiberNode } from "./type.fiber";
+import { FiberNode } from "../type.fiber";
 
 export function completeWork(fiber: FiberNode): void {
   const isPlacement = fiber.flags === "Placement";
