@@ -3,7 +3,7 @@ import { FiberFlags } from "../constants";
 
 const TEXT_ELEMENT = "TEXT_ELEMENT";
 
-export function createTextFiber(text: string, parent: FiberNode): FiberNode {
+export function createTextFiber(text: string): FiberNode {
   return {
     type: TEXT_ELEMENT,
     key: null,
@@ -11,7 +11,7 @@ export function createTextFiber(text: string, parent: FiberNode): FiberNode {
 
     child: null,
     sibling: null,
-    return: parent,
+    return: null,
     alternate: null,
 
     flags: FiberFlags.Placement,

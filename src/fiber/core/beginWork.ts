@@ -4,35 +4,27 @@ import { FiberFlags } from "../constants";
 import { reconcileChildren } from "./reconcileChildren";
 import { prepareToUseHooks, finishUsingHooks } from "../hooks/context";
 
-export function beginWork(fiber: FiberNode): FiberNode | null {
-  if (fiber.type === "HostRoot") {
-    return updateHostRoot(fiber);
+export function beginWork(workInProgress: FiberNode): FiberNode | null {
+  if (workInProgress.type === "HostRoot") {
+    return updateHostRoot(workInProgress);
   }
 
   // 함수형 컴포넌트 처리
-  if (typeof fiber.type === "function") {
-    return updateFunctionComponent(fiber);
+  if (typeof workInProgress.type === "function") {
+    return updateFunctionComponent(workInProgress);
   }
 
-  const prevFiber = fiber.alternate;
-  const isHostComponent = typeof fiber.type === "string";
-  const hasDOM = fiber.stateNode !== null;
-  const propsChanged =
-    prevFiber && prevFiber.memoizedProps !== fiber.pendingProps;
-
-  if (isHostComponent && !hasDOM) {
-    fiber.flags = setFiberFlag(fiber.flags, FiberFlags.Placement);
-  } else if (isHostComponent && propsChanged) {
-    fiber.flags = setFiberFlag(fiber.flags, FiberFlags.Update);
+  // Host 컴포넌트 처리 (HTML 요소)
+  if (typeof workInProgress.type === "string") {
+    return updateHostComponent(workInProgress);
   }
 
-  // Host 컴포넌트의 children도 reconcile 처리
-  if (isHostComponent) {
-    const children = fiber.pendingProps?.children || [];
-    reconcileChildren(fiber.alternate, fiber, children);
+  // 텍스트 노드 처리
+  if (workInProgress.type === "TEXT_ELEMENT") {
+    return null; // 텍스트 노드는 자식이 없으므로 항상 null
   }
 
-  return fiber.child;
+  return null;
 }
 
 function updateHostRoot(fiber: FiberNode): FiberNode | null {
@@ -58,4 +50,29 @@ function updateFunctionComponent(fiber: FiberNode): FiberNode | null {
   finishUsingHooks();
 
   return fiber.child;
+}
+
+function updateHostComponent(workInProgress: FiberNode): FiberNode | null {
+  const prevFiber = workInProgress.alternate;
+  const hasDOM = workInProgress.stateNode !== null;
+  const propsChanged =
+    prevFiber && prevFiber.memoizedProps !== workInProgress.pendingProps;
+
+  if (!hasDOM) {
+    workInProgress.flags = setFiberFlag(
+      workInProgress.flags,
+      FiberFlags.Placement
+    );
+  } else if (propsChanged) {
+    workInProgress.flags = setFiberFlag(
+      workInProgress.flags,
+      FiberFlags.Update
+    );
+  }
+
+  // Host 컴포넌트의 children도 reconcile 처리
+  const children = workInProgress.pendingProps?.children || [];
+  reconcileChildren(workInProgress.alternate, workInProgress, children);
+
+  return workInProgress.child;
 }
