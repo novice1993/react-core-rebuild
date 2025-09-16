@@ -1,5 +1,5 @@
 import { beginWork } from "@/fiber/core/beginWork";
-import { completeWork } from "@/fiber/core/completeWokr";
+import { completeWork } from "@/fiber/core/completeWork";
 import { commitWork } from "@/fiber/core//commitWork";
 import type { FiberNode } from "@/fiber/type.fiber";
 

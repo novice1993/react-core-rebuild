@@ -1,8 +1,10 @@
 import { FiberNode } from "../type.fiber";
+import { hasFiberFlag } from "../utils.fiber";
+import { FiberFlags } from "../constants";
 
 export function completeWork(fiber: FiberNode): void {
-  const isPlacement = fiber.flags === "Placement";
-  const isUpdate = fiber.flags === "Update";
+  const isPlacement = hasFiberFlag(fiber.flags, FiberFlags.Placement);
+  const isUpdate = hasFiberFlag(fiber.flags, FiberFlags.Update);
 
   // Host 컴포넌트일 때
   if (typeof fiber.type === "string") {
@@ -21,7 +23,4 @@ export function completeWork(fiber: FiberNode): void {
     // props 설정
     fiber.memoizedProps = fiber.pendingProps;
   }
-
-  if (fiber.child) completeWork(fiber.child);
-  if (fiber.sibling) completeWork(fiber.sibling);
 }

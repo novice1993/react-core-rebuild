@@ -52,9 +52,6 @@ function updateEffect(
     fiber?.effects?.push(effect);
 
     if (fiber) {
-      /** flags 타입이 number로 통일되지 않은 상태라 임시 처리 (추후 수정 예정) */
-      if (typeof fiber.flags !== "number") fiber.flags = 0;
-
       if (tag === "Passive") {
         fiber.flags |= 0b0010; // PassiveEffect
       } else {

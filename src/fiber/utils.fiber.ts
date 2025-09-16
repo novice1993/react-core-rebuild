@@ -1,6 +1,6 @@
 import { FiberNode } from "./type.fiber";
 
-/** return 포인터를 체이닝을 추적하면서 Host 컴포넌트를 탐색하여 반환하는 함수 */
+/** return 포인터 체이닝을 추적하면서 Host 컴포넌트를 탐색하여 반환하는 함수 */
 export function getHostParent(fiber: FiberNode): HTMLElement | null {
   let parent = fiber.return;
 
@@ -38,4 +38,17 @@ export function patchProps(
       dom.setAttribute(key, nextProps[key]);
     }
   }
+}
+
+/** fiber에 flags를 세팅하는 함수 */
+export function setFiberFlag(currentFlags: number, targetFlag: number): number {
+  return currentFlags | targetFlag;
+}
+
+/** fiber flags 유형을 판별하는 함수 */
+export function hasFiberFlag(
+  currentFlags: number,
+  targetFlag: number
+): boolean {
+  return (currentFlags & targetFlag) !== 0;
 }

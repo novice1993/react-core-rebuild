@@ -1,6 +1,8 @@
 import { FiberNode } from "../type.fiber";
+import { setFiberFlag } from "../utils.fiber";
+import { FiberFlags } from "../constants";
 
-export function beginWork(fiber: FiberNode): void {
+export function beginWork(fiber: FiberNode): FiberNode | null {
   const prevFiber = fiber.alternate;
 
   const isHostComponent = typeof fiber.type === "string";
@@ -9,13 +11,12 @@ export function beginWork(fiber: FiberNode): void {
     prevFiber && prevFiber.memoizedProps !== prevFiber.pendingProps;
 
   if (isHostComponent && !hasDOM) {
-    fiber.flags = "Placement";
+    fiber.flags = setFiberFlag(fiber.flags, FiberFlags.Placement);
     console.log(`[beginWork] ${fiber.type} → flags = Placement`);
   } else if (isHostComponent && propsChanged) {
-    fiber.flags = "Update";
+    fiber.flags = setFiberFlag(fiber.flags, FiberFlags.Update);
     console.log(`[beginWork] ${fiber.type} → flags = Update`);
   }
 
-  if (fiber.child) beginWork(fiber.child);
-  if (fiber.sibling) beginWork(fiber.sibling);
+  return fiber.child;
 }
