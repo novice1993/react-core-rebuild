@@ -1,5 +1,6 @@
 import { FiberNode } from "../type.fiber";
 import { getHostParent, patchProps } from "../utils.fiber";
+import { flushLayoutEffect, flushPassiveEffect } from "../hooks/flushEffects";
 
 export function commitWork(fiber: FiberNode): void {
   // 1. Placement 대상일 경우 부모 요소에 apeendChild 처리
@@ -20,6 +21,20 @@ export function commitWork(fiber: FiberNode): void {
       fiber.alternate?.memoizedProps,
       fiber.memoizedProps
     );
+  }
+
+  if (fiber.effects?.length) {
+    // LayoutEffect 동기 실행
+    if (typeof fiber.flags === "number" && fiber.flags & 0b0100) {
+      flushLayoutEffect(fiber.effects);
+    }
+
+    // PassiveEffect 비동기 실행
+    if (typeof fiber.flags === "number" && fiber.flags & 0b0010) {
+      queueMicrotask(() => {
+        flushPassiveEffect(fiber.effects!);
+      });
+    }
   }
 
   // 자식 요소 commit 수행

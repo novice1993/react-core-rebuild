@@ -12,3 +12,10 @@ export interface Hook {
   queue: UpdateQueue; // 상태 갱신 작업을 담는 큐
   next: Hook | null; // 다음 훅을 가리키는 포인터
 }
+
+export interface Effect {
+  create: () => void | (() => void);
+  destroy: (() => void) | null | undefined;
+  deps: any[] | null;
+  tag: "Passive" | "Layout";
+}
