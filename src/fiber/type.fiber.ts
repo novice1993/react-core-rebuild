@@ -3,7 +3,7 @@ import { Effect } from "./hooks/types";
 export interface FiberNode {
   type: string | Function;
   key: null | string | number;
-  stateNode: HTMLElement | null;
+  stateNode: HTMLElement | Text | null;
 
   child: FiberNode | null;
   sibling: FiberNode | null;
@@ -19,4 +19,10 @@ export interface FiberNode {
   updateQueue: any;
 
   effects?: Effect[];
+}
+
+export interface FiberRoot {
+  containerInfo: HTMLElement;
+  current: FiberNode;
+  finishedWork: FiberNode | null;
 }
