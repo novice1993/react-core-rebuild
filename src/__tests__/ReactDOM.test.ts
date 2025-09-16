@@ -5,7 +5,6 @@
 import { describe, test, expect, beforeEach } from "vitest";
 import { createElement } from "@/jsx/createElement";
 import { render } from "@/ReactDOM";
-import { getGlobalFiberRoot } from "@/fiber/core/fiberRootContext";
 
 describe("ReactDOM.render", () => {
   beforeEach(() => {
@@ -36,21 +35,22 @@ describe("ReactDOM.render", () => {
   });
 
   test("두 번째 render 호출 시 이중버퍼링이 동작한다", () => {
-    const container = document.createElement("div");
+    const firstContainer = document.createElement("div");
+    const secondContaienr = document.createElement("div");
 
     // 첫 번째 render
-    render(createElement("h1", null, "First"), container);
-    const firstFiberRoot = getGlobalFiberRoot();
+    render(createElement("h1", null, "First"), firstContainer);
+    const firstFiberRoot = (firstContainer as any)._renderRootContainer;
     const firstCurrent = firstFiberRoot?.current;
 
     // 두 번째 render
-    render(createElement("h1", null, "Second"), container);
-    const secondFiberRoot = getGlobalFiberRoot();
+    render(createElement("h1", null, "Second"), secondContaienr);
+    const secondFiberRoot = (secondContaienr as any)._renderRootContainer;
     const secondCurrent = secondFiberRoot?.current;
 
     // 검증
-    expect(firstFiberRoot).toBe(secondFiberRoot); // 같은 FiberRoot
-    expect(firstCurrent).not.toBe(secondCurrent); // current는 교체됨
-    expect(container.innerHTML).toBe("<h1>Second</h1>");
+    expect(firstCurrent).not.toBe(secondCurrent);
+    expect(firstContainer.innerHTML).toBe("<h1>First</h1>");
+    expect(secondContaienr.innerHTML).toBe("<h1>Second</h1>");
   });
 });

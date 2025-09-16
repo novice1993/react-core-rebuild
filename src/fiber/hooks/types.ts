@@ -11,6 +11,7 @@ export interface Hook {
   memoizedState: any; // 상태 값
   queue: UpdateQueue; // 상태 갱신 작업을 담는 큐
   next: Hook | null; // 다음 훅을 가리키는 포인터
+  memoizedEffect?: Effect; // 이펙트 객체
 }
 
 export interface Effect {

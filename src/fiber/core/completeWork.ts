@@ -1,5 +1,5 @@
 import { FiberNode } from "../type.fiber";
-import { hasFiberFlag } from "../utils.fiber";
+import { hasFiberFlag } from "../utils";
 import { FiberFlags } from "../constants";
 
 export function completeWork(fiber: FiberNode): void {
@@ -10,9 +10,7 @@ export function completeWork(fiber: FiberNode): void {
     if (isPlacement && fiber.stateNode === null) {
       const textNode = document.createTextNode(fiber.pendingProps.nodeValue);
       fiber.stateNode = textNode;
-      console.log(
-        `[completeWork] TEXT_ELEMENT → textNode 생성: "${fiber.pendingProps.nodeValue}"`
-      );
+      
     }
   }
 
@@ -22,15 +20,32 @@ export function completeWork(fiber: FiberNode): void {
     if (isPlacement && fiber.stateNode === null) {
       const dom = document.createElement(fiber.type);
       fiber.stateNode = dom;
-      console.log(`[completeWork] ${fiber.type} → DOM 생성됨`);
+      
     }
 
     // 2) 갱신되는 컴포넌트인 경우
     else if (isUpdate) {
-      console.log(`[completeWork] <${fiber.type}> → 변경 예정 (props 갱신)`);
+      
     }
   }
 
   // props 설정
   fiber.memoizedProps = fiber.pendingProps;
+
+  // Effects 수집: 자식과 형제의 effects를 현재 fiber로 수집
+  collectChildEffects(fiber);
+}
+
+function collectChildEffects(parent: FiberNode): void {
+  let child = parent.child;
+
+  while (child !== null) {
+    // 자식의 effects를 부모로 수집
+    if (child.effects && child.effects.length > 0) {
+      parent.effects = parent.effects || [];
+      parent.effects.push(...child.effects);
+    }
+
+    child = child.sibling;
+  }
 }

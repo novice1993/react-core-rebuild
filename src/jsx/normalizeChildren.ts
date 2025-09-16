@@ -10,7 +10,7 @@ function isVirtualNode(obj: any): obj is VirtualNode {
   return (
     obj !== null &&
     typeof obj === "object" &&
-    typeof obj.type === "string" &&
+    (typeof obj.type === "string" || typeof obj.type === "function") &&
     typeof obj.props === "object"
   );
 }

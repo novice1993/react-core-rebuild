@@ -1,5 +1,5 @@
 export interface VirtualNode {
-  type: string;
+  type: string | Function;
   key: string | number | null;
   props: {
     [key: string]: any;

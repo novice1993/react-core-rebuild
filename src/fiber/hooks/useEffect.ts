@@ -1,6 +1,7 @@
 import { Effect, Hook } from "./types";
 import { getNextHook } from "./getNextHook";
 import { hookContext } from "./context";
+import { FiberFlags } from "../constants";
 
 type EffectTag = "Passive" | "Layout";
 
@@ -27,12 +28,12 @@ function updateEffect(
   tag: EffectTag
 ) {
   const hook = getNextHook();
-  const prevEffect = hook.memoizedState as Effect | null;
+  const prevEffect = hook.memoizedEffect as Effect | null;
 
   let isDepsChanged = true;
 
   if (prevEffect && deps && prevEffect.deps) {
-    isDepsChanged = isEffectDepsEqual(deps, prevEffect.deps);
+    isDepsChanged = !isEffectDepsEqual(deps, prevEffect.deps);
   }
 
   if (isDepsChanged) {
@@ -43,19 +44,17 @@ function updateEffect(
       tag,
     };
 
-    // fiber memoizedState 갱신
-    hook.memoizedState = effect;
+    // fiber memoizedEffect 갱신
+    hook.memoizedEffect = effect;
 
     // commit 후 실행 될 effect 목록에 저장
     const fiber = hookContext.currentlyRenderingFiber;
-    if (fiber && !fiber?.effects) fiber.effects = [];
-    fiber?.effects?.push(effect);
 
     if (fiber) {
       if (tag === "Passive") {
-        fiber.flags |= 0b0010; // PassiveEffect
+        fiber.flags |= FiberFlags.PassiveEffect; // PassiveEffect
       } else {
-        fiber.flags |= 0b0100; // LayoutEffect
+        fiber.flags |= FiberFlags.LayoutEffect; // LayoutEffect
       }
     }
   }
