@@ -447,18 +447,8 @@ describe("ReactDOM.render", () => {
 - 직접 호출 → workLoop 기반 구조화
 - 단순 큐 → 원형 링크드 리스트
 
-## 참고 자료
-
-- [React Fiber Architecture](https://github.com/acdlite/react-fiber-architecture)
-- [Build your own React](https://pomb.us/build-your-own-react/)
-- [React Source Code](https://github.com/facebook/react)
-
 ## 기술 스택
 
 - TypeScript
 - Vite
 - Vitest
-
----
-
-*이 프로젝트는 학습 목적으로 제작되었습니다. 프로덕션 환경에서는 실제 React를 사용하세요.*
