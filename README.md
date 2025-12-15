@@ -75,9 +75,16 @@ render() 호출
 
 ### 다이어그램
 
-| Render Phase | Commit Phase |
-|:------------:|:------------:|
-| ![Render Phase](./final-react-core-A.png) | ![Commit Phase](./final-react-core-B.png) |
+<table>
+  <tr>
+    <th>Render Phase</th>
+    <th>Commit Phase</th>
+  </tr>
+  <tr>
+    <td><img src="./final-react-core-A.png" width="400" alt="Render Phase" /></td>
+    <td><img src="./final-react-core-B.png" width="400" alt="Commit Phase" /></td>
+  </tr>
+</table>
 
 ## 디렉토리 구조
 
